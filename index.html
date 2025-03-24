@@ -19,13 +19,19 @@
     <div class="container" id="productList"></div>
 
     <script>
-        const DRIVE_FILE_ID = "ID_ТВОЕГО_TXT_ФАЙЛА"; // ID публичного .txt файла в Google Drive
+        const DRIVE_FILE_URL = "https://drive.google.com/uc?export=download&id=ID_ТВОЕГО_TXT_ФАЙЛА";
 
         async function loadProducts() {
             try {
-                let response = await fetch(`https://drive.google.com/uc?id=${DRIVE_FILE_ID}&export=download`);
+                let response = await fetch(DRIVE_FILE_URL);
                 let text = await response.text();
-                let products = text.trim().split("\n").map(line => JSON.parse(line));
+                let products = text.trim().split("\n").map(line => {
+                    try {
+                        return JSON.parse(line);
+                    } catch (e) {
+                        return null;
+                    }
+                }).filter(product => product !== null);
 
                 const container = document.getElementById("productList");
                 const noProducts = document.getElementById("noProducts");
