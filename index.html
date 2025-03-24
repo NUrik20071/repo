@@ -5,48 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Магазин</title>
     <style>
-        .product { border: 1px solid #ddd; padding: 10px; margin: 10px; display: inline-block; }
-        .product img { width: 150px; height: 150px; }
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .container { display: flex; flex-wrap: wrap; justify-content: center; }
+        .item { border: 1px solid #ccc; padding: 10px; margin: 10px; width: 200px; }
+        img { width: 100%; height: auto; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
-    <h2>Магазин</h2>
-    <div id="productList"></div>
+
+    <h1>Магазин</h1>
+    <p id="noProducts" class="hidden">НЕТ ТОВАРОВ</p>
+    <div class="container" id="productList"></div>
 
     <script>
-        const TXT_FILE_ID = "ID_ФАЙЛА_PRODUCTS.TXT"; 
-        const FOLDER_ID = "ID_ПАПКИ_С_ТОВАРАМИ";  
+        const DRIVE_FILE_ID = "ID_ТВОЕГО_TXT_ФАЙЛА"; // ID публичного .txt файла в Google Drive
 
-        async function fetchProducts() {
-            const response = await fetch(`https://www.googleapis.com/drive/v3/files/${TXT_FILE_ID}?alt=media`, {
-                headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` }
-            });
+        async function loadProducts() {
+            try {
+                let response = await fetch(`https://drive.google.com/uc?id=${DRIVE_FILE_ID}&export=download`);
+                let text = await response.text();
+                let products = text.trim().split("\n").map(line => JSON.parse(line));
 
-            const text = await response.text();
-            displayProducts(text);
+                const container = document.getElementById("productList");
+                const noProducts = document.getElementById("noProducts");
+
+                if (products.length === 0) {
+                    noProducts.classList.remove("hidden");
+                    return;
+                }
+
+                products.forEach(product => {
+                    let item = document.createElement("div");
+                    item.className = "item";
+                    item.innerHTML = `
+                        <img src="https://drive.google.com/uc?id=${product.image}" alt="${product.name}">
+                        <h3>${product.name}</h3>
+                        <p>Цена: ${product.price} ₽</p>
+                        <a href="https://сторонний-сайт.ру/оплата?item=${product.id}" target="_blank">
+                            <button>Купить</button>
+                        </a>
+                    `;
+                    container.appendChild(item);
+                });
+            } catch (error) {
+                console.error("Ошибка загрузки товаров:", error);
+            }
         }
 
-        function displayProducts(data) {
-            const productList = document.getElementById("productList");
-            productList.innerHTML = "";
-
-            const products = data.split("\n").map(line => line.split("|"));
-            products.forEach(([id, name, price, imageId]) => {
-                const div = document.createElement("div");
-                div.className = "product";
-                div.innerHTML = `
-                    <img src="https://drive.google.com/uc?id=${imageId}" alt="${name}">
-                    <h3>${name}</h3>
-                    <p>Цена: ${price}₽</p>
-                    <a href="https://example-payment.com/pay?product=${id}" target="_blank">
-                        <button>Купить</button>
-                    </a>
-                `;
-                productList.appendChild(div);
-            });
-        }
-
-        fetchProducts();
+        loadProducts();
     </script>
+
 </body>
 </html>
