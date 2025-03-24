@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Магазин на GitHub Pages</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: none;
+        }
+        #productForm {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Добро пожаловать в магазин!</h1>
+
+    <div id="authButton">
+        <button onclick="authenticate()">Авторизоваться через Google</button>
+    </div>
+
+    <div id="avatarDiv">
+        <img id="avatar" src="" alt="Avatar">
+        <span id="userName"></span>
+    </div>
+
+    <div id="productForm">
+        <h2>Добавить товар</h2>
+        <input type="text" id="productName" placeholder="Название товара" required><br><br>
+        <input type="number" id="productPrice" placeholder="Цена товара" required><br><br>
+        <input type="file" id="productImage" accept="image/*"><br><br>
+        <button onclick="uploadProduct()">Загрузить товар</button>
+    </div>
+
+    <script>
+        const CLIENT_ID = "531826501379-e2hpum3jrta7u2q2s255ubvn23ie559j.apps.googleusercontent.com";
+        const API_KEY = "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";
+        const SCOPES = "https://www.googleapis.com/auth/drive.file";
+        const FOLDER_ID = "17tKKmWurcoRZi96oI7ujB25uMNhUOy78"; // ID папки на Google Drive
+
+        let accessToken = "";
+
+        // Функция авторизации
+        function authenticate() {
+            google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID,
+                scope: SCOPES,
+                callback: (tokenResponse) => {
+                    accessToken = tokenResponse.access_token;
+                    localStorage.setItem("access_token", accessToken);
+                    alert("Авторизация успешна!");
+                    displayUserProfile();
+                },
+            }).requestAccessToken();
+        }
+
+        // Отображение аватарки и имени пользователя
+        function displayUserProfile() {
+            const accessToken = localStorage.getItem("access_token");
+            if (!accessToken) return;
+
+            fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+                headers: { Authorization: "Bearer " + accessToken },
+            })
+            .then(response => response.json())
+            .then(user => {
+                document.getElementById("avatar").src = user.picture;
+                document.getElementById("userName").textContent = `Привет, ${user.name}`;
+                document.getElementById("avatar").style.display = "block";
+                document.getElementById("authButton").style.display = "none";
+            })
+            .catch(error => console.error('Ошибка получения данных пользователя: ', error));
+        }
+
+        // Загрузка товара в Google Drive
+        function uploadProduct() {
+            const productName = document.getElementById("productName").value;
+            const productPrice = document.getElementById("productPrice").value;
+            const productImage = document.getElementById("productImage").files[0];
+
+            if (!productName || !productPrice || !productImage) {
+                alert("Пожалуйста, заполните все поля!");
+                return;
+            }
+
+            const metadata = {
+                name: `${productName}.txt`, // Сохраняем описание товара как .txt
+                mimeType: "text/plain",
+                parents: [FOLDER_ID],
+            };
+
+            const productInfo = `Название: ${productName}\nЦена: ${productPrice}`;
+
+            const formData = new FormData();
+            formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
+            formData.append("file", new Blob([productInfo], { type: "text/plain" }));
+
+            fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart", {
+                method: "POST",
+                headers: { Authorization: "Bearer " + accessToken },
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(`Товар добавлен! ID товара: ${data.id}`);
+                uploadProductImage(productImage, data.id); // Загрузка изображения товара
+            })
+            .catch(error => alert("Ошибка загрузки товара: " + error.message));
+        }
+
+        // Загрузка изображения товара
+        function uploadProductImage(productImage, productId) {
+            const metadata = {
+                name: productImage.name,
+                mimeType: productImage.type,
+                parents: [FOLDER_ID],
+            };
+
+            const formData = new FormData();
+            formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
+            formData.append("file", productImage);
+
+            fetch(`https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart`, {
+                method: "POST",
+                headers: { Authorization: "Bearer " + accessToken },
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(`Изображение товара загружено! ID изображения: ${data.id}`);
+            })
+            .catch(error => alert("Ошибка загрузки изображения: " + error.message));
+        }
+    </script>
+</body>
+</html>
