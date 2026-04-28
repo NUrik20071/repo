@@ -18,6 +18,7 @@ CHANNEL_URL = "https://t.me/MLMiyabi"
 CHAT_URL = "https://t.me/mlc_squad"
 REVIEWS_URL = "https://t.me/myabi7"
 MY_TON_WALLET = "@fannychka"
+MY_KASPI = "4400430032499250" 
 LOGO_PATH = "logo.jpg" 
 MY_USDT = "UQCZdm8Q__q_okRyZPnMafcs1RDqb65Cf-4K6oj7uOn0r-dh" 
 
@@ -273,15 +274,20 @@ async def show_payment(msg, state):
             f"💰 Цена: {data['price']}\n"
             f"🎮 ID: `{data['gid']}`\n\n"
             # ... остальной текст
-            f"Сделайте перевод на кошелек:`{MY_TON_WALLET}`\n\n"
+              f"KASPI:`{MY_KASPI}`\n\n"   
+            f"Сделайте перевод на кошелек:`{MY_TON_WALLET}`\n\n"       
             f"Или на адрес криптокошелька USDT (TON):\n `{MY_USDT}`\n\n"
-            f"После оплаты пришли скриншот чека.")
+            f"После оплаты пришлите чек.")
     
     builder = InlineKeyboardBuilder()
     # Теперь кнопка открывает Mini App Wallet
     builder.row(types.InlineKeyboardButton(
         text="Открыть Wallet 👛", 
         url="https://t.me/wallet/start")
+    )
+    builder.row(types.InlineKeyboardButton(
+        text="Открыть KASPI 💳", 
+        url="https://dz3a4.app.goo.gl/cnNS")
     )
     builder.row(types.InlineKeyboardButton(text="🏠 Отмена", callback_data="to_main"))
     
