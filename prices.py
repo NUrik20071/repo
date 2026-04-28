@@ -22,14 +22,14 @@ PRICE_DATA = {
                 {"id": "twilight_pass", "name": "🌆 Сумеречный Пропуск", "price": 4125},
             ],
             "bundles": [
-                {"id": "weekly_elite", "name": "🎁 Недельный Элитный Набор", "price": 450},
+                {"id": "weekly_elite", "name": "🎁 Недельный Элитный На��ор", "price": 450},
                 {"id": "monthly_epic", "name": "🎁 Месячный Эпический Набор", "price": 2350},
             ],
             "diamonds": [
-                {"id": "d50", "name": "💎 50+5 (Бонус 50+50)", "price": 450, "bonus": True},
-                {"id": "d150", "name": "💎 150+15", "price": 1370, "bonus": True},
-                {"id": "d250", "name": "💎 250+25", "price": 2200, "bonus": True},
-                {"id": "d500", "name": "💎 500+65", "price": 4350, "bonus": True},
+                {"id": "d50", "name": "💎 50+50 (бонус за первоё пополнение)", "price": 450, "bonus": True},
+                {"id": "d150", "name": "💎 150+150 (бонус за первоё пополнение)", "price": 1370, "bonus": True},
+                {"id": "d250", "name": "💎 250+250 (бонус за первоё пополнение)", "price": 2200, "bonus": True},
+                {"id": "d500", "name": "💎 500+500 (бонус за первоё пополнение)", "price": 4350, "bonus": True},
                 {"id": "d78", "name": "💎 78+8", "price": 710},
                 {"id": "d156", "name": "💎 156+16", "price": 1400},
                 {"id": "d234", "name": "💎 234+23", "price": 2060},
@@ -70,10 +70,10 @@ PRICE_DATA = {
                 {"id": "monthly_epic", "name": "🎁 Месячный Эпический Набор", "price": 450},
             ],
             "diamonds": [
-                {"id": "d50", "name": "💎 50+5 (Бонус 50+50)", "price": 90, "bonus": True},
-                {"id": "d150", "name": "💎 150+15", "price": 265, "bonus": True},
-                {"id": "d250", "name": "💎 250+25", "price": 430, "bonus": True},
-                {"id": "d500", "name": "💎 500+65", "price": 880, "bonus": True},
+                {"id": "d50", "name": "💎 50+50 (бонус за первоё пополнение)", "price": 90, "bonus": True},
+                {"id": "d150", "name": "💎 150+150 (бонус за первоё пополнение)", "price": 265, "bonus": True},
+                {"id": "d250", "name": "💎 250+250 (бонус за первоё пополнение)", "price": 430, "bonus": True},
+                {"id": "d500", "name": "💎 500+500 (бонус за первоё пополнение)", "price": 880, "bonus": True},
                 {"id": "d78", "name": "💎 78+8", "price": 145},
                 {"id": "d156", "name": "💎 156+16", "price": 280},
                 {"id": "d234", "name": "💎 234+23", "price": 405},
@@ -389,7 +389,7 @@ if __name__ == "__main__":
     print(get_formatted_prices("KZ", db))
     
     # Example: Update a price
-    print("\n--- Updating 💎 50+5 price for KZ from 450 to 500 ---")
+    print("\n--- Updating 💎 50+50 price for KZ from 450 to 500 ---")
     db.update_price("d50", "KZ", 500)
     
     # Check price history
